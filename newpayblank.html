@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="author" content="作者名字">
+    <title></title>
+    <style>
+        #loadingpanel {
+            width: 445px;
+            height: 430px;
+            background-image: url('Images/waitpay.png');/*需配置背景图片路径*/
+            background-size: 465px;
+            background-position: 0% 0%;
+            background-repeat: no-repeat;
+            border-radius: 15px;
+            position: absolute;
+            left: -10px;
+            top: 0;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 14px;
+            color: #494949;
+        }
+        
+
+            div.waitmsgT:before {
+                content: "";
+                display: table;
+            }
+            #loadingpanel > div.waitmsgT {
+                margin-top: 270px;
+                color: #A6A6A6;
+                text-align: center;
+            }
+    </style>
+</head>
+<body>
+
+    <script src="http://apps.bdimg.com/libs/jquery/1.4.1/jquery.min.js"></script>
+    <script src="Scripts/jquery.blockUI.js" type="text/javascript"></script><!--需引入blockUI.js文件-->
+    <script>
+        (function ($) {
+            $.extend({
+                Request: function (m) {
+                    var sValue = location.search.match(new RegExp("[\?\&]" + m + "=([^\&]*)(\&?)", "i"));
+                    return sValue ? sValue[1] : sValue;
+                }
+            });
+        })(jQuery);
+        $(document).ready(function () {
+            var WaitPayMsg="";
+            var NewblockUI=function(){
+                $.blockUI({
+                message:
+                    '<div id="loadingpanel"><div class="waitmsgT">' + WaitPayMsg + '</div></div>',
+                css: {
+                    width: "445px",
+                    height: "430px",
+                    top: "20%",
+                    backgroundSize: "445px",
+                    borderRadius: "15px",
+                    padding: "0px",
+                    border: 'none',
+                    backgroundColor: "#fff"
+                },
+                overlayCSS: {
+                    backgroundColor: '#000',
+                    opacity: 0.5,
+                    cursor: 'wait'
+                }
+            });
+            }
+            var IsPay = $.Request("IsPay");
+            if (IsPay!=null&&IsPay == "0") {
+                var PaymentURL = $.Request("payurl");
+                var data = decodeURI($.Request("data"));
+                var form = $("<form method='post' name='payForm' id='pay'></form>");
+                $(document.body).append(form);
+                $("form[id='pay']:not(':last')").remove();
+                form.attr({ "action": PaymentURL });
+                form.append($("<input type='hidden'>").attr({ "name": "data" }).val(data));
+                form.submit();
+            } else if(IsPay!=null&&IsPay == "1"){
+                WaitPayMsg = "Pay the problem and jump on the page for you...";
+                NewblockUI();
+            }else{
+                WaitPayMsg = "In the process, please wait a moment...";
+                NewblockUI();
+            }
+        });
+    </script>
+
+</body>
+</html>

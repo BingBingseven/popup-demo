@@ -1,0 +1,3 @@
+signuptest.html为提交订单页面demo
+newpayblank.html为需放入提交订单页面同域下的空白页面
+相关说明已写于各代码旁的注释里了

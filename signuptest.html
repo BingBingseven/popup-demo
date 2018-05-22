@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="author" content="作者名字">
+    <title></title>
+    <link href="" rel="stylesheet">
+    <link href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <script src="http://apps.bdimg.com/libs/jquery/1.4.1/jquery.min.js"></script>
+</head>
+<body>
+    <button type="button" class="btn btn-primary btn-lg" id="submit">提交注册信息</button>
+    <script>
+        var PaymentURL = "http://op-dev.italkbb.com/PaymentWeb_test/main/pay";
+        var blankurl = "newpayblank.html";//空白页面路径，务必与订单页面同域
+        //var code = 1;//code=1模拟ajax返回code！=0的情况，表示需定时关闭页面
+        var code=0;//cdode=0模拟ajax返回code=0的情况，表示下一步进入支付中心
+        var GetInvoiceInfo = function () {
+            var blank = window.open(blankurl);
+            $.ajax({
+                url: "http://localhost:56549/Test/GetInvoiceInfo",//需配置的获取流水号接口URL
+                type: "POST",
+                //async: false,//此时需让ajax变成异步，否则会有问题
+                data:"",
+                success: function (data) {
+                    if (code == 0) {
+                        blank.location = blankurl + "?IsPay=0&payurl=" + PaymentURL + "&data=5000";//需给新页面重定向添加IsPay参数，IsPay=0表示可以进入支付中心,参数data为传给支付中心的值
+                    } else {
+                        blank.location = blankurl + "?IsPay=1";//IsPay=1表示不会进入支付，为待关闭的页面
+                        setTimeout(function () { blank.close() },5000);//待空白页面提示显示几秒后，关闭空白页面
+                        
+                    }
+                },
+                error:function(data){
+                    blank.location = blankurl + "?IsPay=1";//同上
+                    setTimeout(function () { blank.close() },5000);//同上
+                }
+            })
+        };
+        $("#submit").click(function () {
+            GetInvoiceInfo();
+        });
+    </script>
+</body>
+</html>
